@@ -90,7 +90,7 @@ class LoginView(APIView):
         except Exception as e:
             response_payload = {
                     "status": "Bad request",
-                    "message": f"Authentication failed {str(e)}",
+                    "message": "Authentication failed",
                     "statusCode": 401
                     }
             return Response(response_payload, status=status.HTTP_401_UNAUTHORIZED)
@@ -107,10 +107,15 @@ class UserView(APIView):
                 payload = jwt.decode(token, 'secret', algorithms=['HS256'])
             except jwt.ExpiredSignatureError:
                 raise AuthenticationFailed("Unauthorized access")
-            if payload['id'] != userId:
-                raise AuthenticationFailed("Restricted access")
-
-            user = User.objects.filter(userId=payload['id']).first()
+            logged_user = User.objects.filter(userId=payload['id']).first()
+            if not logged_user:
+                raise AuthenticationFailed("user not logged in")
+            logged_user_orgs = logged_user.organisations.all()
+            user = User.objects.filter(userId=userId).first()
+            if not user:
+                raise NotFound("user does not exist")
+            if not any(user in org.users.all() for org in logged_user_orgs):
+                raise AuthenticationFailed("user is not in allowed organisations")
             response_serializer = UserResponseSerializer(user)
             response_payload = {
                     "status": "success",

@@ -79,8 +79,12 @@ WSGI_APPLICATION = 'user_auth.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'user_auth_52jm',
+        'USER': 'armolas',
+        'PASSWORD': 'nuREQ1QWiVOPILxcarKi3Jn0VF7Eqf4T',
+        'HOST': 'dpg-cq597m88fa8c7383hbqg-a.oregon-postgres.render.com',
+        'PORT': '5432'
     }
 }
 AUTH_USER_MODEL="account.User"
